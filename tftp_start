@@ -1,0 +1,34 @@
+#!/bin/bash
+# Load TFTP server and link upload/download folder to Dropbox if detected
+
+echo "Stopping tftp server if running..."
+sudo launchctl unload -F /System/Library/LaunchDaemons/tftp.plist
+
+echo "Checking tftp server is not running..."
+netstat -na |grep \*.69
+
+echo "Preparing Dropbox folder..."
+chmod 777 /Users/pasdesignal/Dropbox/cisco/
+touch /Users/pasdesignal/Dropbox/cisco/upload
+chmod 777 /Users/pasdesignal/Dropbox/cisco/upload
+
+echo "Attempting to symlink tftp root folder..."
+cd /private/
+sudo rm -rf tftpboot
+sudo ln -s /Users/pasdesignal/Dropbox/cisco/ tftpboot
+ls -l
+
+echo "Creating defualt upload file..."
+touch /private/tftpboot/upload
+chmod 777 /private/tftpboot/upload
+echo "Use (upload) as destination default filename..."
+
+echo "Attempting to restart tftp server..."
+sudo launchctl load -F /System/Library/LaunchDaemons/tftp.plist
+
+echo "Checking tftp server is running..."
+netstat -na |grep \*.69
+
+
+
+echo "Good-bye..."
